@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Entities;
+using TeamTrack.Infrastructure.Interfaces;
 
 namespace TeamTrack.Infrastructure.Repositories
 {

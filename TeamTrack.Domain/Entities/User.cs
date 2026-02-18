@@ -100,6 +100,11 @@ namespace TeamTrack.Domain.Entities
 
         public void AssignRole(int roleId)
         {
+            if (roleId <= 0)
+            {
+                throw new DomainException("Role ID must be a positive integer.");
+            }
+            
             if (_roles.Any(r => r.RoleId == roleId))
             {
                 return;

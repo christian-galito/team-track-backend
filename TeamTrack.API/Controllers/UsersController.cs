@@ -6,8 +6,8 @@ namespace TeamTrack.API.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        [HttpGet("{id:int}")]
-        public IActionResult GetByUserId(int userId)
+        [HttpGet("{userId:int}")]
+        public IActionResult GetUserById(int userId)
         {
             // TODO: 
             return Ok();

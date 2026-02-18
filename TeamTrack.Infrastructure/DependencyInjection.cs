@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TeamTrack.Application.Interfaces;
+using TeamTrack.Infrastructure.Interfaces;
 using TeamTrack.Infrastructure.Persistence;
 using TeamTrack.Infrastructure.Repositories;
 using TeamTrack.Infrastructure.Services.CurrentUser;

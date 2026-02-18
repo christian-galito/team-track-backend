@@ -1,4 +1,6 @@
-﻿namespace TeamTrack.Domain.Entities
+﻿using TeamTrack.Domain.Common;
+
+namespace TeamTrack.Domain.Entities
 {
     public class UserRole 
     {
@@ -21,12 +23,7 @@
         {
             if (user == null)
             {
-                throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            }
-
-            if (roleId <= 0)
-            {
-                throw new ArgumentException("Role ID must be a positive integer.", nameof(roleId));
+                throw new DomainException("User cannot be null.");
             }
 
             User = user;

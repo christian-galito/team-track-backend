@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Common;
 using TeamTrack.Domain.Entities;
-using System.Collections.Concurrent;
+using TeamTrack.Infrastructure.Interfaces;
 
 namespace TeamTrack.Infrastructure.Persistence
 {
@@ -37,6 +38,8 @@ namespace TeamTrack.Infrastructure.Persistence
                 }
             }
 
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(TeamTrackDbContext).Assembly);
+
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 entity.SetTableName(ToSnakeCaseCached(entity.GetTableName()!));
@@ -53,8 +56,6 @@ namespace TeamTrack.Infrastructure.Persistence
                 foreach (var index in entity.GetIndexes())
                     index.SetDatabaseName(ToSnakeCaseCached(index.GetDatabaseName()!));
             }
-
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(TeamTrackDbContext).Assembly);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

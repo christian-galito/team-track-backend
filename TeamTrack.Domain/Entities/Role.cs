@@ -29,7 +29,7 @@ namespace TeamTrack.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Role name cannot be empty.", nameof(name));
+                throw new DomainException("Role name cannot be empty.");
             }
 
             Name = name;

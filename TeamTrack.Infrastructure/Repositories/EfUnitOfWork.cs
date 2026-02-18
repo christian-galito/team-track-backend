@@ -1,4 +1,5 @@
 ﻿using TeamTrack.Application.Interfaces;
+using TeamTrack.Infrastructure.Interfaces;
 
 namespace TeamTrack.Infrastructure.Repositories
 {

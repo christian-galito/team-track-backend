@@ -25,12 +25,7 @@ namespace TeamTrack.Domain.Entities
         {
             if (user == null)
             {
-                throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            }
-
-            if (string.IsNullOrWhiteSpace(hashedPassword))
-            {
-                throw new ArgumentException("Hashed password cannot be empty.", nameof(hashedPassword));
+                throw new DomainException("User cannot be null.");
             }
 
             User = user;

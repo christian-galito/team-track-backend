@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTrack.Domain.Entities;
 
-namespace TeamTrack.Application.Interfaces
+namespace TeamTrack.Infrastructure.Interfaces
 {
     public interface ITeamTrackDbContext
     {
