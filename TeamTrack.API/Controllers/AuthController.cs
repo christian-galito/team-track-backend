@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using TeamTrack.Application.Features.Authentication.Command.LoginUser;
 using TeamTrack.Application.Features.Authentication.Command.RegisterUser;
 
 namespace TeamTrack.API.Controllers
@@ -27,5 +28,12 @@ namespace TeamTrack.API.Controllers
                 value: result);
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return Ok(result);
+        }
     }
 }
