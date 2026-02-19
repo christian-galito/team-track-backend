@@ -6,6 +6,8 @@ namespace TeamTrack.Application.Interfaces
     {
         Task AddAsync(User user, CancellationToken cancellation);
         
+        Task<User?> GetByEmailAsync(string email, CancellationToken cancellation);
+
         Task<User?> GetByIdAsync(int userId, CancellationToken cancellation);
 
         void Update(User user);

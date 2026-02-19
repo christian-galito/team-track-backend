@@ -28,6 +28,14 @@ namespace TeamTrack.Infrastructure.Repositories
             return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
         }
 
+        public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellation)
+        {
+            return await _context.Users
+                .Include(u => u.Roles)
+                .Include(u => u.Credentials)
+                .FirstOrDefaultAsync(u => u.Email == email, cancellation);
+        }
+
         public async Task<User?> GetByIdAsync(int userId, CancellationToken cancellationToken)
         {
             return await _context.Users

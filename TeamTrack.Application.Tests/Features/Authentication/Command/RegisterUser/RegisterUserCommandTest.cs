@@ -10,7 +10,7 @@ using TeamTrack.Domain.Entities;
 
 namespace TeamTrack.Application.Tests.Features.Authentication.Command.RegisterUser
 {
-    public class RegisterUserCommandTests
+    public class RegisterUserCommandTest
     {
         private readonly IMediator _mediator;
         private readonly Mock<IPasswordHasher> _passwordHasherMock = new();
@@ -18,7 +18,7 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.RegisterUs
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
 
-        public RegisterUserCommandTests()
+        public RegisterUserCommandTest()
         {
             var services = new ServiceCollection();
 

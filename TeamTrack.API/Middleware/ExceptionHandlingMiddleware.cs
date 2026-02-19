@@ -71,6 +71,16 @@ namespace TeamTrack.API.Middleware
                     _logger.LogError(ex, "Unexpected DbUpdateException occurred. TraceId: {TraceId}", context.TraceIdentifier);
                 }
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    Message = "Unauthorized access.",
+                    Errors = new[] { ex.Message },
+                    TraceId = context.TraceIdentifier,
+                });
+            }
             catch (Exception ex)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
