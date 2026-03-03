@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Data.Common;
+using TeamTrack.Application.Common.Exceptions;
 using TeamTrack.Domain.Common;
 
 namespace TeamTrack.API.Middleware
@@ -77,6 +78,16 @@ namespace TeamTrack.API.Middleware
                 await context.Response.WriteAsJsonAsync(new
                 {
                     Message = "Unauthorized access.",
+                    Errors = new[] { ex.Message },
+                    TraceId = context.TraceIdentifier,
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    Message = "Resource not found.",
                     Errors = new[] { ex.Message },
                     TraceId = context.TraceIdentifier,
                 });

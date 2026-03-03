@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using TeamTrack.Application.Features.Authentication.Command.LoginUser;
-using TeamTrack.Application.Features.Authentication.Command.RegisterUser;
+using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
+using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
 
 namespace TeamTrack.API.Controllers
 {

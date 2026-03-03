@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace TeamTrack.Application.Features.Authentication.Command.LoginUser
+namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
 {
     public sealed class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
     {

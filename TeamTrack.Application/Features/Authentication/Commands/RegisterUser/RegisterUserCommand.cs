@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using TeamTrack.Application.Features.Authentication.Response;
+using TeamTrack.Application.Features.Authentication.Responses;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Entities;
 
-namespace TeamTrack.Application.Features.Authentication.Command.RegisterUser
+namespace TeamTrack.Application.Features.Authentication.Commands.RegisterUser
 {
     public record RegisterUserCommand(
         string FirstName,

@@ -23,9 +23,19 @@ namespace TeamTrack.Infrastructure.Repositories
             await _context.Users.AddAsync(user, cancellationToken);
         }
 
+        public void Delete(User user)
+        {
+            _context.Users.Remove(user);
+        }
+
         public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
         {
             return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email, int excludedUserId, CancellationToken cancellationToken)
+        {
+            return await _context.Users.AnyAsync(u => u.Email == email && u.Id != excludedUserId, cancellationToken);
         }
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellation)
@@ -57,6 +67,11 @@ namespace TeamTrack.Infrastructure.Repositories
         public async Task<bool> UserNameExistsAsync(string userName, CancellationToken cancellationToken)
         {
             return await _context.Users.AnyAsync(u => u.UserName == userName, cancellationToken);
+        }
+
+        public async Task<bool> UserNameExistsAsync(string userName, int excludedUserId, CancellationToken cancellationToken)
+        {
+            return await _context.Users.AnyAsync(u => u.UserName == userName && u.Id != excludedUserId, cancellationToken);
         }
     }
 }
