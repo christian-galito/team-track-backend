@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using TeamTrack.Application.Features.Authentication.Response;
+using TeamTrack.Application.Features.Authentication.Responses;
 using TeamTrack.Application.Interfaces;
 
-namespace TeamTrack.Application.Features.Authentication.Command.LoginUser
+namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
 {
     public record LoginUserCommand(string Email, string Password) : IRequest<LoginUserResponse>
     {

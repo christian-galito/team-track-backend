@@ -1,8 +1,8 @@
-﻿namespace TeamTrack.Application.Features.Authentication.Response
+﻿namespace TeamTrack.Application.Features.Users.Responses
 {
-    public record RegisterUserResponse
+    public record UserResponseDto
     {
-        public int UserId { get; init; }
+        public int UserId { get ; init; }
 
         public string FirstName { get; init; }
 
@@ -14,7 +14,7 @@
 
         public string Email { get; init; }
 
-        public RegisterUserResponse(int userId, string firstName, string? middleName, string lastName, string userName, string email)
+        public UserResponseDto(int userId, string firstName, string? middleName, string lastName, string userName, string email)
         {
             UserId = userId;
             FirstName = firstName;

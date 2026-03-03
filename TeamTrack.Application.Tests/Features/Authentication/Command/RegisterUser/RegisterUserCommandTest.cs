@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using TeamTrack.Application.Common.Behaviors;
-using TeamTrack.Application.Features.Authentication.Command.RegisterUser;
+using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Entities;
 
@@ -89,10 +89,21 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.RegisterUs
         [Fact]
         public async Task RegisterUser_ShouldCreateUser_WhenCommandIsValid()
         {
-            _userRepositoryMock.Setup(x => x.EmailExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            _userRepositoryMock.Setup(x => x.UserNameExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            _roleRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _passwordHasherMock.Setup(x => x.HashPassword(It.IsAny<string>())).Returns("hashed-password");
+            _userRepositoryMock
+                .Setup(x => x.EmailExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            _userRepositoryMock
+                .Setup(x => x.UserNameExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            _roleRepositoryMock
+                .Setup(x => x.ExistsAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            _passwordHasherMock
+                .Setup(x => x.HashPassword(It.IsAny<string>()))
+                .Returns("hashed-password");
 
             var command = ValidCommand();
             var result = await _mediator.Send(command);
@@ -112,10 +123,21 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.RegisterUs
         [InlineData("N0SpecialCharacter")]
         public async Task RegisterUser_ShouldFail_WhenPasswordNotInCorrectFormat(string password)
         {
-            _userRepositoryMock.Setup(x => x.EmailExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            _userRepositoryMock.Setup(x => x.UserNameExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-            _roleRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-            _passwordHasherMock.Setup(x => x.HashPassword(It.IsAny<string>())).Returns("hashed-password");
+            _userRepositoryMock
+                .Setup(x => x.EmailExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            _userRepositoryMock
+                .Setup(x => x.UserNameExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            _roleRepositoryMock
+                .Setup(x => x.ExistsAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            _passwordHasherMock
+                .Setup(x => x.HashPassword(It.IsAny<string>()))
+                .Returns("hashed-password");
 
             var command = new RegisterUserCommand(
               FirstName: "John",

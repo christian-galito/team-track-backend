@@ -1,4 +1,4 @@
-﻿namespace TeamTrack.Application.Features.Authentication.Response
+﻿namespace TeamTrack.Application.Features.Authentication.Responses
 {
     public record LoginUserResponse
     {

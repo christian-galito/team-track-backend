@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using TeamTrack.Application.Common.Behaviors;
-using TeamTrack.Application.Features.Authentication.Command.LoginUser;
+using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Entities;
 

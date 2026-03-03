@@ -46,7 +46,7 @@ namespace TeamTrack.Domain.Entities
             return user;
         }
 
-        public void ChangeName(string firstName, string lastName, string middleName)
+        public void ChangeName(string firstName, string lastName, string? middleName)
         {
             ValidateAndSetName(firstName, lastName, middleName);
         }
@@ -95,7 +95,7 @@ namespace TeamTrack.Domain.Entities
                 throw new DomainException("Username cannot be empty.");
             }
 
-            UserName = userName;
+            UserName = userName.Trim();
         }
 
         public void AssignRole(int roleId)

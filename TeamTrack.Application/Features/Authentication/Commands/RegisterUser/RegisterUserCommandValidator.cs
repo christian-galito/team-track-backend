@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
+using TeamTrack.Application.Common.Extensions;
 using TeamTrack.Application.Interfaces;
 
-namespace TeamTrack.Application.Features.Authentication.Command.RegisterUser
+namespace TeamTrack.Application.Features.Authentication.Commands.RegisterUser
 {
     public sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {
@@ -51,12 +52,12 @@ namespace TeamTrack.Application.Features.Authentication.Command.RegisterUser
 
         private async Task<bool> MustBeUniqueUserName(string userName, CancellationToken cancellationToken)
         {
-            return !await _userRepository.UserNameExistsAsync(userName, cancellationToken);
+            return !await _userRepository.UserNameExistsAsync(userName.NormalizeInput(), cancellationToken);
         }
 
         private async Task<bool> MustBeUniqueEmail(string email, CancellationToken cancellationToken)
         {
-            return !await _userRepository.EmailExistsAsync(email, cancellationToken);
+            return !await _userRepository.EmailExistsAsync(email.NormalizeInput(true), cancellationToken);
         }
 
         private async Task<bool> MustExistRole(int roleId, CancellationToken cancellationToken)
