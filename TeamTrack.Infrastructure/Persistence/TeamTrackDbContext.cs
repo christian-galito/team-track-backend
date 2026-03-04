@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Common;
 using TeamTrack.Domain.Entities;
@@ -55,6 +56,15 @@ namespace TeamTrack.Infrastructure.Persistence
 
                 foreach (var index in entity.GetIndexes())
                     index.SetDatabaseName(ToSnakeCaseCached(index.GetDatabaseName()!));
+            }
+
+            foreach(var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(BaseEntity).IsAssignableFrom(entity.ClrType))
+                {
+                    modelBuilder.Entity(entity.ClrType)
+                        .HasQueryFilter(CreateIsDeletedRestriction(entity.ClrType));
+                }
             }
         }
 
@@ -112,6 +122,13 @@ namespace TeamTrack.Infrastructure.Persistence
             }
 
             return builder.ToString();
+        }
+        private static LambdaExpression CreateIsDeletedRestriction(Type entityType)
+        {
+            var parameter = Expression.Parameter(entityType, "e");
+            var property = Expression.Property(parameter, "IsDeleted");
+            var condition = Expression.Equal(property, Expression.Constant(false));
+            return Expression.Lambda(condition, parameter);
         }
     }
 }
