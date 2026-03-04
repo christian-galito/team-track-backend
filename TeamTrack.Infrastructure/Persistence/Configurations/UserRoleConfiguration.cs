@@ -9,6 +9,8 @@ namespace TeamTrack.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey(x => new { x.UserId, x.RoleId });
+
+            builder.HasQueryFilter(ur => !ur.Role.IsDeleted);
         }
     }
 }

@@ -10,6 +10,10 @@
 
         public string? UpdatedBy { get; private set; }
 
+        public bool IsDeleted { get; private set; }
+
+        public DateTime? DeletedDate { get; private set; }
+
         internal void SetCreated(string? user)
         {
             CreatedDate = DateTime.UtcNow;
@@ -20,6 +24,14 @@
         {
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = user;
+        }
+
+        internal void MarkAsDeleted()
+        {
+            if (IsDeleted) return;
+
+            IsDeleted = true;
+            DeletedDate = DateTime.UtcNow;
         }
     }
 }

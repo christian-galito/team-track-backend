@@ -25,7 +25,11 @@ namespace TeamTrack.Infrastructure.Repositories
 
         public void Delete(User user)
         {
-            _context.Users.Remove(user);
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            user.MarkAsDeleted();
         }
 
         public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
