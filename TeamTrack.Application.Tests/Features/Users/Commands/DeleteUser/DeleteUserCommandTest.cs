@@ -69,7 +69,7 @@ namespace TeamTrack.Application.Tests.Features.Users.Commands.DeleteUser
 
         private static User CreateUser()
         {
-            var user = new User(
+            var user = User.Create(
                 firstName: "John",
                 middleName: null,
                 lastName: "Doe",

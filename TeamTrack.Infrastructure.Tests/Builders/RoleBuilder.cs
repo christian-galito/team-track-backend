@@ -15,7 +15,7 @@ namespace TeamTrack.Infrastructure.Tests.Builders
 
         public async Task<Role> BuildAndPersistAsync(TeamTrackDbContext context)
         {
-            var role = Role.Create(_name);
+            var role = new Role(_name);
             context.Roles.Add(role);
             await context.SaveChangesAsync();
             return role;
