@@ -27,9 +27,6 @@ namespace TeamTrack.Application.Tests.Features.Users.Queries
 
             services.AddTransient<IUserRepository>(_ => _userRepositoryMock.Object);
 
-            services.AddValidatorsFromAssemblyContaining<GetUserByIdQuery>();
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
             _mediator = services.BuildServiceProvider().GetRequiredService<IMediator>();
         }
 
@@ -49,7 +46,7 @@ namespace TeamTrack.Application.Tests.Features.Users.Queries
         [Fact] 
         public async Task GetUserById_ShouldReturnUser_WhenUserExists()
         {
-            var user = new User
+            var user = User.Create
             (
                 firstName: "John",
                 middleName: null,

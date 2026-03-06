@@ -26,11 +26,16 @@ namespace TeamTrack.Domain.Entities
 
         private User() { }
 
-        public User(string email, string userName, string firstName, string lastName, string? middleName = null)
+        private User(string email, string userName, string firstName, string lastName, string? middleName = null)
         {
             ValidateAndSetName(firstName, lastName, middleName);
             ValidateAndSetEmail(email);
             ValidateAndSetUserName(userName);
+        }
+
+        public static User Create(string firstName, string? middleName, string lastName, string userName, string email)
+        {
+            return new User(email, userName, firstName, lastName, middleName);
         }
 
         public static User Register(string firstName, string? middleName, string lastName, string userName, string email, string hashedPassword)
@@ -39,6 +44,7 @@ namespace TeamTrack.Domain.Entities
             {
                 throw new DomainException("User must have atleast one credential.");
             }
+
             var user = new User(email, userName, firstName, lastName, middleName);
 
             user.AddCredential(hashedPassword);

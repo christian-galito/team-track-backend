@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Users.Commands.DeleteUser;
 using TeamTrack.Application.Features.Users.Commands.UpdateUser;
 using TeamTrack.Application.Features.Users.Queries;
-using TeamTrack.Domain.Entities;
 
 namespace TeamTrack.API.Controllers
 {

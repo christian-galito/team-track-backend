@@ -1,16 +1,18 @@
-﻿using TeamTrack.Domain.Common;
+using TeamTrack.Domain.Common;
 
 namespace TeamTrack.Domain.Entities
 {
-    public class Role : BaseEntity
+    public class Project : BaseEntity
     {
         public int Id { get; private set; }
 
         public string Name { get; private set; } = null!;
 
-        private Role() { }
-       
-        public Role(string name)
+        private Project()
+        {
+        }
+
+        public Project(string name)
         {
             ValidateAndSetName(name);
         }
@@ -24,11 +26,11 @@ namespace TeamTrack.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new DomainException("Role name cannot be empty.");
+                throw new DomainException("Project name cannot be empty.");
             }
 
-            Name = name;
+            Name = name.Trim();
         }
-
     }
 }
+

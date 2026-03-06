@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TeamTrack.Domain.Entities;
 
 namespace TeamTrack.Infrastructure.Interfaces
@@ -10,6 +10,7 @@ namespace TeamTrack.Infrastructure.Interfaces
         DbSet<User> Users { get; }
         DbSet<UserRole> UserRoles { get; }
         DbSet<UserCredential> UserCredentials { get; }
+        DbSet<Project> Projects { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

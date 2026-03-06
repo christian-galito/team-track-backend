@@ -124,11 +124,11 @@ namespace TeamTrack.Application.Tests.Features.Users.Commands.UpdateUser
 
         private static User CreateUser()
         {
-            var user = new User(
+            var user = User.Create(
                 firstName: "John",
                 middleName: null,
                 lastName: "Doe",
-                userName: "jdoe",
+                userName: "johndoe",
                 email: "john@test.com");
 
             return user;

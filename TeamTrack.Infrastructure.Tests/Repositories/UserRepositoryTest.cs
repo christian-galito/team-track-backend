@@ -141,18 +141,19 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         {
             var user = new UserBuilder()
                 .Build();
-            
-            Context.Users.Add(user);
+
+            var repository = new UserRepository(Context); 
+
+            await repository.AddAsync(user, CancellationToken.None);
             await Context.SaveChangesAsync();
 
             using var readOnlyContext = CreateNewContext();
-            var repository = new UserRepository(readOnlyContext);
-
-            var retrievedUser = await repository.GetByIdAsync(user.Id, CancellationToken.None);
+            var readRepository = new UserRepository(readOnlyContext);
+            var retrievedUser = await readRepository.GetByIdAsync(user.Id, CancellationToken.None);
 
             retrievedUser.Should().NotBeNull();
             retrievedUser!.Email.Should().Be(user.Email);
-            retrievedUser!.UserName.Should().Be(user.UserName);
+            retrievedUser.UserName.Should().Be(user.UserName);
         }
 
         [Fact]
@@ -166,13 +167,15 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
                 .WithRole(role.Id)
                 .Build();
 
-            Context.Users.Add(user);
+            var repository = new UserRepository(Context);
+
+            await repository.AddAsync(user, CancellationToken.None);
             await Context.SaveChangesAsync();
 
             using var readOnlyContext = CreateNewContext();
-            var repository = new UserRepository(readOnlyContext);
+            var readRepository = new UserRepository(readOnlyContext);
 
-            var retrievedUser = await repository.GetByIdAsync(user.Id, CancellationToken.None);
+            var retrievedUser = await readRepository.GetByIdAsync(user.Id, CancellationToken.None);
 
             retrievedUser.Should().NotBeNull();
             retrievedUser!.Roles.Should().ContainSingle(r => r.RoleId == role.Id);
@@ -191,25 +194,27 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
                 .WithRole(role.Id)
                 .Build();
 
-            Context.Users.Add(user);
+            var repository = new UserRepository(Context);
+
+            await repository.AddAsync(user, CancellationToken.None);
             await Context.SaveChangesAsync();
             var userId = user.Id;
 
             using var updateContext = CreateNewContext();
-            var repository = new UserRepository(updateContext);
-
-            var loadedUser = await repository.GetByIdAsync(userId, CancellationToken.None);
+            var updateRepository = new UserRepository(updateContext);
+            var loadedUser = await updateRepository.GetByIdAsync(userId, CancellationToken.None);
+            
             loadedUser.Should().NotBeNull();
             loadedUser!.ChangeName("Jane", "Doe", null);
             loadedUser.ChangeEmail("jane@test.com");
             loadedUser.ChangeUserName("jane_doe");
 
-            repository.Update(loadedUser);
+            updateRepository.Update(loadedUser);
             await updateContext.SaveChangesAsync();
 
-            using var readContext = CreateNewContext();
-            var repoRead = new UserRepository(readContext);
-            var updatedUser = await repoRead.GetByIdAsync(userId, CancellationToken.None);
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+            var updatedUser = await readRepository.GetByIdAsync(userId, CancellationToken.None);
 
             updatedUser.Should().NotBeNull();
             updatedUser!.FirstName.Should().Be("Jane");
@@ -237,26 +242,26 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
                 .WithRole(role.Id)
                 .Build();
 
-            Context.Users.Add(user1);
-            Context.Users.Add(user2);
+            var repository = new UserRepository(Context);
+            await repository.AddAsync(user1, CancellationToken.None);
+            await repository.AddAsync(user2, CancellationToken.None);
             await Context.SaveChangesAsync();
-            var user1Id = user1.Id;
-            var user2Id = user2.Id;
 
             using var updateContext = CreateNewContext();
-            var repository = new UserRepository(updateContext);
-            var loadedUser1 = await repository.GetByIdAsync(user1Id, CancellationToken.None);
+            var updateRepository = new UserRepository(updateContext);
+            var loadedUser1 = await updateRepository.GetByIdAsync(user1.Id, CancellationToken.None);
+            
             loadedUser1!.ChangeUserName("user1_updated");
-            repository.Update(loadedUser1);
+            updateRepository.Update(loadedUser1);
             await updateContext.SaveChangesAsync();
 
-            using var readContext = CreateNewContext();
-            var repoRead = new UserRepository(readContext);
-            var unchangedUser = await repoRead.GetByIdAsync(user2Id, CancellationToken.None);
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+            var unchangedUser = await readRepository.GetByIdAsync(user2.Id, CancellationToken.None);
+            
             unchangedUser.Should().NotBeNull();
             unchangedUser!.UserName.Should().Be("user2");
         }
-
 
         [Fact]
         public async Task Delete_ShouldRemoveUser_WhenUserExists()
@@ -271,21 +276,23 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
                 .WithRole(role.Id)
                 .Build();
 
-            Context.Users.Add(user);
+            var repository = new UserRepository(Context);
+            await repository.AddAsync(user, CancellationToken.None);
             await Context.SaveChangesAsync();
-            var userId = user.Id;
 
             using var deleteContext = CreateNewContext();
-            var repository = new UserRepository(deleteContext);
-            var toDelete = await repository.GetByIdAsync(userId, CancellationToken.None);
+            var deleteRepository = new UserRepository(deleteContext);
+            var toDelete = await deleteRepository.GetByIdAsync(user.Id, CancellationToken.None);
+            
             toDelete.Should().NotBeNull();
 
-            repository.Delete(toDelete!);
+            deleteRepository.Delete(toDelete!);
             await deleteContext.SaveChangesAsync();
 
-            using var readContext = CreateNewContext();
-            var repoRead = new UserRepository(readContext);
-            var deletedUser = await repoRead.GetByIdAsync(userId, CancellationToken.None);
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+            var deletedUser = await readRepository.GetByIdAsync(user.Id, CancellationToken.None);
+
             deletedUser.Should().BeNull();
         }
 
@@ -307,21 +314,22 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
                 .WithRole(role.Id)
                 .Build();
 
-            Context.Users.Add(user1);
-            Context.Users.Add(user2);
+            var repository = new UserRepository(Context);
+            await repository.AddAsync(user1, CancellationToken.None);
+            await repository.AddAsync(user2, CancellationToken.None);
             await Context.SaveChangesAsync();
-            var user1Id = user1.Id;
-            var user2Id = user2.Id;
 
             using var deleteContext = CreateNewContext();
-            var repository = new UserRepository(deleteContext);
-            var toDelete = await repository.GetByIdAsync(user1Id, CancellationToken.None);
-            repository.Delete(toDelete!);
+            var deleteRepository = new UserRepository(deleteContext);
+            var toDelete = await deleteRepository.GetByIdAsync(user1.Id, CancellationToken.None);
+
+            deleteRepository.Delete(toDelete!);
             await deleteContext.SaveChangesAsync();
 
-            using var readContext = CreateNewContext();
-            var repoRead = new UserRepository(readContext);
-            var remainingUser = await repoRead.GetByIdAsync(user2Id, CancellationToken.None);
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+            var remainingUser = await readRepository.GetByIdAsync(user2.Id, CancellationToken.None);
+            
             remainingUser.Should().NotBeNull();
             remainingUser!.UserName.Should().Be("user2");
         }
