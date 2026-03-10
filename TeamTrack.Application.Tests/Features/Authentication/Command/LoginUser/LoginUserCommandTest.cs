@@ -16,6 +16,7 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
         private readonly Mock<IPasswordHasher> _passwordHasherMock = new();
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+        private readonly Mock<ITokenService> _tokenServiceMock = new();
 
         public LoginUserCommandTest()
         {
@@ -29,6 +30,7 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
             services.AddTransient<IUserRepository>(_ => _userRepositoryMock.Object);
             services.AddTransient<IPasswordHasher>(_ => _passwordHasherMock.Object);
             services.AddTransient<IUnitOfWork>(_ => _unitOfWorkMock.Object);
+            services.AddTransient<ITokenService>(_ => _tokenServiceMock.Object);
 
             services.AddValidatorsFromAssemblyContaining<LoginUserCommand>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -89,10 +91,14 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
                 .Setup(x => x.VerifyPassword(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
 
+            _tokenServiceMock
+                .Setup(x => x.GenerateToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns("validtoken");
+
             var command = new LoginUserCommand("test@test.com", "invalidpassword");
             var result = await _mediator.Send(command);
 
-            result.UserName.Should().Be("jdoe");
+            result.Token.Should().Be("validtoken");
         }
 
         private static User CreateUserWithCredential()
