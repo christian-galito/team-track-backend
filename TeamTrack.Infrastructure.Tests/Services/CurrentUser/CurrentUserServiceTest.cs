@@ -6,9 +6,12 @@ namespace TeamTrack.Infrastructure.Tests.Services.CurrentUser
     {
         public string? UserName { get; }
 
-        public CurrentUserServiceTest(string? userName = "test-user")
+        public string? UserId { get; }
+
+        public CurrentUserServiceTest(string? userId = "1", string? userName = "test-user")
         {
             UserName = userName;
+            UserId = userId;
         }
     }
 }
