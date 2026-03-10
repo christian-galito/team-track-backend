@@ -5,6 +5,7 @@ using TeamTrack.Application.Interfaces;
 using TeamTrack.Infrastructure.Interfaces;
 using TeamTrack.Infrastructure.Persistence;
 using TeamTrack.Infrastructure.Repositories;
+using TeamTrack.Infrastructure.Services.Authentication;
 using TeamTrack.Infrastructure.Services.CurrentUser;
 using TeamTrack.Infrastructure.Services.Security;
 
@@ -24,6 +25,10 @@ namespace TeamTrack.Infrastructure
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
+            services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+
+            services.AddScoped<ITokenService, JwtTokenService>();
 
             services.Scan(scan => scan
                .FromAssemblies(

@@ -1,8 +1,9 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Projects.Commands.CreateProject;
-using TeamTrack.Application.Features.Projects.Commands.UpdateProject;
 using TeamTrack.Application.Features.Projects.Commands.DeleteProject;
+using TeamTrack.Application.Features.Projects.Commands.UpdateProject;
 using TeamTrack.Application.Features.Projects.Queries;
 
 namespace TeamTrack.API.Controllers
@@ -18,6 +19,7 @@ namespace TeamTrack.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet("{projectId:int}")]
         public async Task<IActionResult> GetProjectById(int projectId, CancellationToken cancellationToken)
         {
@@ -26,6 +28,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
         {
@@ -34,6 +37,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] CreateProjectCommand command, CancellationToken cancellationToken)
         {
@@ -42,6 +46,7 @@ namespace TeamTrack.API.Controllers
             return CreatedAtAction(nameof(GetProjectById), new { projectId = result.ProjectId }, result);
         }
 
+        [Authorize]
         [HttpPut("{projectId:int}")]
         public async Task<IActionResult> UpdateProject(int projectId, [FromBody] UpdateProjectCommand command, CancellationToken cancellationToken)
         {
@@ -51,6 +56,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{projectId:int}")]
         public async Task<IActionResult> DeleteProject(int projectId, CancellationToken cancellationToken)
         {

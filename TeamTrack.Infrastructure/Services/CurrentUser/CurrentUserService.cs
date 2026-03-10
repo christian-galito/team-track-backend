@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TeamTrack.Application.Interfaces;
 
@@ -13,10 +14,16 @@ namespace TeamTrack.Infrastructure.Services.CurrentUser
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string? UserName =>
+        public string? UserId =>
             _httpContextAccessor.HttpContext?
                 .User?
                 .FindFirst(ClaimTypes.NameIdentifier)?
+                .Value;
+
+        public string? UserName =>
+            _httpContextAccessor.HttpContext?
+                .User?
+                .FindFirst("username")?
                 .Value;
     }
 
