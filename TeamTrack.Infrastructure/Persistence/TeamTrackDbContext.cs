@@ -79,9 +79,11 @@ namespace TeamTrack.Infrastructure.Persistence
         {
             foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
+                var userAndId = $"{_currentUserService.UserId}:{_currentUserService.UserName}";
+
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.SetCreated(_currentUserService.UserName);
+                    entry.Entity.SetCreated(userAndId);
                 }
 
                 if (entry.State == EntityState.Modified)
@@ -90,7 +92,7 @@ namespace TeamTrack.Infrastructure.Persistence
                     entry.Property(nameof(BaseEntity.CreatedBy)).IsModified = false;
 
                     if (entry.Properties.Any(p => p.IsModified))
-                        entry.Entity.SetUpdated(_currentUserService.UserName);
+                        entry.Entity.SetUpdated(userAndId);
                 }
             }
         }

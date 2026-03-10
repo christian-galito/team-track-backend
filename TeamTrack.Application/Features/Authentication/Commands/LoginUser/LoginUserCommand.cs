@@ -12,10 +12,13 @@ namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
 
             private readonly IPasswordHasher _passwordHasher;
 
-            public LoginUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+            private readonly ITokenService _tokenService;
+
+            public LoginUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
             {
                 _userRepository = userRepository;
                 _passwordHasher = passwordHasher;
+                _tokenService = tokenService;
             }
 
             public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -30,7 +33,9 @@ namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
                     throw new UnauthorizedAccessException("Invalid credentials.");
                 }
 
-                return new LoginUserResponse(user.Id, user.UserName);
+                var token = _tokenService.GenerateToken(user.Id, user.UserName, user.Email);
+
+                return new LoginUserResponse(token);
             }
         }
     }

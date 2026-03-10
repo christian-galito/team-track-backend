@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
 using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
@@ -16,6 +17,7 @@ namespace TeamTrack.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
         {
@@ -28,6 +30,7 @@ namespace TeamTrack.API.Controllers
                 value: result);
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
         {
