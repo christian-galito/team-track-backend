@@ -37,6 +37,13 @@ namespace TeamTrack.Infrastructure.Persistence
                     modelBuilder.Entity(entity.ClrType)
                         .Property(nameof(BaseEntity.CreatedDate))
                         .IsRequired();
+
+                    if (Database.IsNpgsql())
+                    {
+                        modelBuilder.Entity(entity.ClrType)
+                            .Property<uint>("xmin")
+                            .IsRowVersion();
+                    }
                 }
             }
 

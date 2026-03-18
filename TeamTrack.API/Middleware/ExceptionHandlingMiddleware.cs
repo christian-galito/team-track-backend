@@ -44,6 +44,18 @@ namespace TeamTrack.API.Middleware
                     TraceId = context.TraceIdentifier
                 });
             }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency conflict occurred.");
+
+                context.Response.StatusCode = StatusCodes.Status409Conflict;
+
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    Message = "The resource was modified by another user.",
+                    TraceId = context.TraceIdentifier
+                });
+            }
             catch (DbUpdateException ex)
             {
                 string? constraintName = null;
