@@ -44,6 +44,11 @@ namespace TeamTrack.Infrastructure.Persistence.Configurations
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.RefreshTokens)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -4,9 +4,9 @@ using TeamTrack.Application.Interfaces;
 
 namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
 {
-    public record LoginUserCommand(string Email, string Password) : IRequest<LoginUserResponse>
+    public record LoginUserCommand(string Email, string Password) : IRequest<TokenResponse>
     {
-        public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResponse>
+        public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, TokenResponse>
         {
             private readonly IUserRepository _userRepository;
 
@@ -14,14 +14,20 @@ namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
 
             private readonly ITokenService _tokenService;
 
-            public LoginUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService)
+            private readonly IRefreshTokenHasher _refreshTokenHasher;
+
+            private readonly IUnitOfWork _unitOfWork;
+
+            public LoginUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, ITokenService tokenService, IRefreshTokenHasher refreshTokenHasher, IUnitOfWork unitOfWork)
             {
                 _userRepository = userRepository;
                 _passwordHasher = passwordHasher;
                 _tokenService = tokenService;
+                _refreshTokenHasher = refreshTokenHasher;
+                _unitOfWork = unitOfWork;
             }
 
-            public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+            public async Task<TokenResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
             {
                 var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
@@ -33,9 +39,15 @@ namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
                     throw new UnauthorizedAccessException("Invalid credentials.");
                 }
 
-                var token = _tokenService.GenerateToken(user.Id, user.UserName, user.Email);
+                var accessToken = _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email);
+                var refreshToken = _tokenService.GenerateRefreshToken();
+                var hashedRefreshToken = _refreshTokenHasher.HashRefreshToken(refreshToken);
 
-                return new LoginUserResponse(token);
+                user.AddRefreshToken(hashedRefreshToken);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return new TokenResponse(accessToken, refreshToken);
             }
         }
     }

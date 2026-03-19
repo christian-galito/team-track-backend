@@ -6,6 +6,7 @@ namespace TeamTrack.Infrastructure.Interfaces
     public interface ITeamTrackDbContext
     {
 
+        DbSet<RefreshToken> RefreshTokens { get; }
         DbSet<Role> Roles { get; }
         DbSet<User> Users { get; }
         DbSet<UserRole> UserRoles { get; }

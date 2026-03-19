@@ -8,6 +8,8 @@ namespace TeamTrack.Domain.Entities
 
         private readonly List<UserCredential> _credentials = new();
 
+        private readonly List<RefreshToken> _refreshTokens = new();
+    
         public int Id { get; private set; }
 
         public string FirstName { get; private set; } = null!;
@@ -23,6 +25,8 @@ namespace TeamTrack.Domain.Entities
         public IReadOnlyCollection<UserRole> Roles => _roles;
 
         public IReadOnlyCollection<UserCredential> Credentials => _credentials;
+
+        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens;
 
         private User() { }
 
@@ -127,6 +131,16 @@ namespace TeamTrack.Domain.Entities
             }
 
             _credentials.Add(UserCredential.Create(this, hashedPassword));
+        }
+
+        public void AddRefreshToken(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new DomainException("Refresh token cannot be empty.");
+            }
+
+            _refreshTokens.Add(RefreshToken.Create(this, refreshToken));
         }
     }
 }

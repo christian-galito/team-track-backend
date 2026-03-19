@@ -20,6 +20,7 @@ namespace TeamTrack.Infrastructure.Persistence
             _currentUserService = currentUserService;
         }
 
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<User> Users => Set<User>();
         public DbSet<UserCredential> UserCredentials => Set<UserCredential>();

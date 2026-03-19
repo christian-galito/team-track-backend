@@ -17,6 +17,7 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
         private readonly Mock<ITokenService> _tokenServiceMock = new();
+        private readonly Mock<IRefreshTokenHasher> _refreshTokenHasherMock = new();
 
         public LoginUserCommandTest()
         {
@@ -31,6 +32,7 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
             services.AddTransient<IPasswordHasher>(_ => _passwordHasherMock.Object);
             services.AddTransient<IUnitOfWork>(_ => _unitOfWorkMock.Object);
             services.AddTransient<ITokenService>(_ => _tokenServiceMock.Object);
+            services.AddTransient<IRefreshTokenHasher>(_ => _refreshTokenHasherMock.Object);
 
             services.AddValidatorsFromAssemblyContaining<LoginUserCommand>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -49,21 +51,20 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
                 .Setup(x => x.VerifyPassword(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(false);
 
-            var command = new LoginUserCommand("test@test.com", "invalidpassword");
+            var command = new LoginUserCommand("test@test.com", "invalid-password");
 
             Func<Task> act = () => _mediator.Send(command);
 
             await act.Should().ThrowAsync<UnauthorizedAccessException>();
-
         }
 
         [Theory]
-        [InlineData("invalidemail")]
+        [InlineData("invalid-email")]
         [InlineData("")]
         public async Task LoginUser_ShouldFail_WhenEmailIsInvalid(string email)
         {
 
-            var command = new LoginUserCommand(email, "invalidpassword");
+            var command = new LoginUserCommand(email, "invalid-password");
 
             Func<Task> act = () => _mediator.Send(command);
 
@@ -92,13 +93,22 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
                 .Returns(true);
 
             _tokenServiceMock
-                .Setup(x => x.GenerateToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns("validtoken");
+                .Setup(x => x.GenerateAccessToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns("valid-access-token");
 
-            var command = new LoginUserCommand("test@test.com", "invalidpassword");
+            _tokenServiceMock
+                .Setup(x => x.GenerateRefreshToken())
+                .Returns("valid-refresh-token");
+
+            _refreshTokenHasherMock
+                .Setup(x => x.HashRefreshToken(It.IsAny<string>()))
+                .Returns("hashed-valid-refresh-token");
+
+            var command = new LoginUserCommand("test@test.com", "validpassword");
             var result = await _mediator.Send(command);
 
-            result.Token.Should().Be("validtoken");
+            result.AccessToken.Should().Be("valid-access-token");
+            result.RefreshToken.Should().Be("valid-refresh-token");
         }
 
         private static User CreateUserWithCredential()
