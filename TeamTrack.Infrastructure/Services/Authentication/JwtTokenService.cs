@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using TeamTrack.Application.Interfaces;
 
@@ -16,7 +17,7 @@ namespace TeamTrack.Infrastructure.Services.Authentication
             _settings = settings.Value;
         }
 
-        public string GenerateToken(int userId, string userName, string email)
+        public string GenerateAccessToken(int userId, string userName, string email)
         {
             var claims = new List<Claim>
             {
@@ -38,6 +39,14 @@ namespace TeamTrack.Infrastructure.Services.Authentication
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            RandomNumberGenerator.Fill(randomBytes);
+
+            return Convert.ToBase64String(randomBytes);
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
 using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
+using TeamTrack.Application.Features.Authentication.Commands.TokenRefresh;
 
 namespace TeamTrack.API.Controllers
 {
@@ -33,6 +34,15 @@ namespace TeamTrack.API.Controllers
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] TokenRefreshCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
 

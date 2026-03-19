@@ -48,7 +48,7 @@ namespace TeamTrack.Application.Tests.Features.Users.Commands.UpdateUser
 
             _userRepositoryMock
                 .Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Domain.Entities.User?)null);
+                .ReturnsAsync((User?)null);
 
             var command = CreateValidCommand();
 

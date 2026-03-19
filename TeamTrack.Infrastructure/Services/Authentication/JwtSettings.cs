@@ -8,6 +8,8 @@
 
         public string SecretKey { get; init; } = default!;
 
+        public string RefreshTokenHashKey { get ; init; } = default!;
+
         public int ExpirationMinutes { get; init; }
     }
 }

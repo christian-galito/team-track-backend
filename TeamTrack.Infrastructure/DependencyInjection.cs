@@ -29,6 +29,7 @@ namespace TeamTrack.Infrastructure
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 
             services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher> ();
 
             services.Scan(scan => scan
                .FromAssemblies(
