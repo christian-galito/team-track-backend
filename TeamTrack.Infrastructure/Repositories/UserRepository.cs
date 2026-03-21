@@ -58,6 +58,20 @@ namespace TeamTrack.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         }
 
+        public async Task<IEnumerable<string>> GetUserPermissionsAsync(int userId, CancellationToken cancellationToken)
+        {
+            var userRoles = await _context.UserRoles
+               .Where(u => u.UserId == userId)
+               .Include(u => u.Role.Permissions)
+                   .ThenInclude(r => r.Permission)
+               .ToListAsync(cancellationToken);
+
+            return userRoles
+                .SelectMany(ur => ur.Role.Permissions)
+                .Select(p => p.Permission.Name)
+                .Distinct();
+        }
+
         public void Update(User user)
         {
             if (user == null)

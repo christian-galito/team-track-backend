@@ -11,14 +11,19 @@ namespace TeamTrack.Infrastructure.Services.Authentication
     public class JwtTokenService : ITokenService
     {
         private readonly JwtSettings _settings;
+        
+        private readonly IUserRepository _userRepository;
 
-        public JwtTokenService(IOptions<JwtSettings> settings)
+        public JwtTokenService(IOptions<JwtSettings> settings, IUserRepository userRepository)
         {
             _settings = settings.Value;
+            _userRepository = userRepository;
         }
 
-        public string GenerateAccessToken(int userId, string userName, string email)
+        public async Task<string> GenerateAccessToken(int userId, string userName, string email, CancellationToken cancellationToken)
         {
+            var permissions = await _userRepository.GetUserPermissionsAsync(userId, cancellationToken);
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
@@ -26,8 +31,9 @@ namespace TeamTrack.Infrastructure.Services.Authentication
                 new Claim(ClaimTypes.Email, email),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey));
+            claims.AddRange(permissions.Select(p => new Claim("Permission", p)));
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

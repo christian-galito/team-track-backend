@@ -5,6 +5,7 @@ using TeamTrack.Application.Features.Projects.Commands.CreateProject;
 using TeamTrack.Application.Features.Projects.Commands.DeleteProject;
 using TeamTrack.Application.Features.Projects.Commands.UpdateProject;
 using TeamTrack.Application.Features.Projects.Queries;
+using TeamTrack.Domain.Security;
 
 namespace TeamTrack.API.Controllers
 {
@@ -19,7 +20,7 @@ namespace TeamTrack.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.Project.ReadPolicy)]
         [HttpGet("{projectId:int}")]
         public async Task<IActionResult> GetProjectById(int projectId, CancellationToken cancellationToken)
         {
@@ -28,7 +29,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.Project.ReadPolicy)]
         [HttpGet]
         public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
         {
@@ -37,7 +38,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.Project.CreatePolicy)]
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] CreateProjectCommand command, CancellationToken cancellationToken)
         {
@@ -46,7 +47,7 @@ namespace TeamTrack.API.Controllers
             return CreatedAtAction(nameof(GetProjectById), new { projectId = result.ProjectId }, result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.Project.UpdatePolicy)]
         [HttpPut("{projectId:int}")]
         public async Task<IActionResult> UpdateProject(int projectId, [FromBody] UpdateProjectCommand command, CancellationToken cancellationToken)
         {
@@ -56,7 +57,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.Project.DeletePolicy)]
         [HttpDelete("{projectId:int}")]
         public async Task<IActionResult> DeleteProject(int projectId, CancellationToken cancellationToken)
         {

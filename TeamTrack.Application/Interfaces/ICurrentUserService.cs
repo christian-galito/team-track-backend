@@ -5,5 +5,7 @@
         string? UserId { get; }
 
         string? UserName { get; }
+
+        IEnumerable<string> Permissions { get; }
     }
 }

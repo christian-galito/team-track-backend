@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using TeamTrack.Infrastructure.Repositories;
 using TeamTrack.Infrastructure.Tests.Builders;
 using TeamTrack.Infrastructure.Tests.Persistence;
@@ -10,9 +11,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task GetByTokenAsync_ShouldReturnToken_WhenTokenExists()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithUserName("jdoe")

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
 using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
 using TeamTrack.Application.Features.Authentication.Commands.TokenRefresh;
+using TeamTrack.Domain.Security;
 
 namespace TeamTrack.API.Controllers
 {
@@ -18,7 +19,7 @@ namespace TeamTrack.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.User.CreatePolicy)]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
         {

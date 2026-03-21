@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using TeamTrack.Application.Interfaces;
 using TeamTrack.Domain.Common;
 using TeamTrack.Domain.Entities;
+using TeamTrack.Infrastructure.Extensions;
 using TeamTrack.Infrastructure.Interfaces;
 
 namespace TeamTrack.Infrastructure.Persistence
@@ -35,20 +36,32 @@ namespace TeamTrack.Infrastructure.Persistence
             {
                 if (typeof(BaseEntity).IsAssignableFrom(entity.ClrType))
                 {
-                    modelBuilder.Entity(entity.ClrType)
+                    var createdDateProperty = modelBuilder.Entity(entity.ClrType)
                         .Property(nameof(BaseEntity.CreatedDate))
+                        .IsRequired();
+
+                    modelBuilder.Entity(entity.ClrType)
+                        .Property(nameof(BaseEntity.IsDeleted))
+                        .HasDefaultValue(false)
                         .IsRequired();
 
                     if (Database.IsNpgsql())
                     {
+                        createdDateProperty.HasDefaultValueSql("NOW()");
                         modelBuilder.Entity(entity.ClrType)
                             .Property<uint>("xmin")
                             .IsRowVersion();
+                    }
+                    else
+                    {
+                        createdDateProperty.HasDefaultValue(DateTime.UtcNow);
                     }
                 }
             }
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(TeamTrackDbContext).Assembly);
+
+            modelBuilder.ApplySeedersFromAssembly(typeof(TeamTrackDbContext).Assembly);
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

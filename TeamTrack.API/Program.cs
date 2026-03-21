@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using TeamTrack.API.Middleware;
 using TeamTrack.Application;
@@ -71,14 +72,13 @@ builder.Services
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            NameClaimType = JwtRegisteredClaimNames.Sub,
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-
             ValidIssuer = jwtSettings.Issuer,
             ValidAudience = jwtSettings.Audience,
-
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
         };

@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using TeamTrack.Domain.Security;
 using TeamTrack.Infrastructure.Repositories;
 using TeamTrack.Infrastructure.Tests.Builders;
 using TeamTrack.Infrastructure.Tests.Persistence;
@@ -11,9 +12,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task AddAsync_ShouldPersistUser_WithValidData()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithUserName("jdoe")
@@ -39,9 +38,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task AddAsync_ShouldPersistUser_WithRolesAndCredentials()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithRole(role.Id)
@@ -67,9 +64,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task AddAsync_ShouldThrow_WhenEmailAlreadyExists()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user1 = new UserBuilder()
                 .WithEmail("john@test.com")
@@ -98,9 +93,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task AddAsync_ShouldThrow_WhenUsernameAlreadyExists()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user1 = new UserBuilder()
                 .WithEmail("john1@test.com")
@@ -159,9 +152,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task GetByIdAsync_ShouldIncludeRole()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithRole(role.Id)
@@ -182,11 +173,63 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         }
 
         [Fact]
+        public async Task GetUserPermissionsAsync_ShouldReturnAllPermissions_WhenUserIsAdmin()
+        {
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
+
+            var user = new UserBuilder()
+                .WithRole(role.Id)
+                .Build();
+
+            var repository = new UserRepository(Context);
+
+            await repository.AddAsync(user, CancellationToken.None);
+            await Context.SaveChangesAsync();
+
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+
+            var retrievedPermissions = await readRepository.GetUserPermissionsAsync(user.Id, CancellationToken.None);
+
+            retrievedPermissions.Should().NotBeNull();
+            retrievedPermissions.Should().BeEquivalentTo(Permissions.All.Select(p => p.Name));
+        }
+
+        [Fact]
+        public async Task GetUserPermissionsAsync_ShouldReturnEmployeePermissions_WhenUserIsEmployee()
+        {
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Employee");
+
+            var user = new UserBuilder()
+                .WithRole(role.Id)
+                .Build();
+
+            var repository = new UserRepository(Context);
+
+            await repository.AddAsync(user, CancellationToken.None);
+            await Context.SaveChangesAsync();
+
+            using var readOnlyContext = CreateNewContext();
+            var readRepository = new UserRepository(readOnlyContext);
+
+            var retrievedPermissions = await readRepository.GetUserPermissionsAsync(user.Id, CancellationToken.None);
+
+            var employeePermissions = new List<PermissionDefinition>()
+            {
+                Permissions.User.Read,
+                Permissions.User.Update,
+            };
+
+            employeePermissions.AddRange(Permissions.Project.All);
+
+            retrievedPermissions.Should().NotBeNull();
+            retrievedPermissions.Should().BeEquivalentTo(employeePermissions.Select(p => p.Name));
+        }
+
+        [Fact]
         public async Task Update_ShouldPersist_WhenUserExists()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithUserName("jdoe")
@@ -227,9 +270,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task Update_ShouldNotAffectOtherUsers_WhenOneUserIsUpdated()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user1 = new UserBuilder()
                 .WithUserName("user1")
@@ -266,9 +307,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task Delete_ShouldRemoveUser_WhenUserExists()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user = new UserBuilder()
                 .WithUserName("jdoe")
@@ -299,9 +338,7 @@ namespace TeamTrack.Infrastructure.Tests.Repositories
         [Fact]
         public async Task Delete_ShouldNotAffectOtherUsers_WhenOneUserIsDeleted()
         {
-            var role = await new RoleBuilder()
-                .WithName("Admin")
-                .BuildAndPersistAsync(Context);
+            var role = await Context.Roles.FirstAsync(r => r.Name == "Administrator");
 
             var user1 = new UserBuilder()
                 .WithUserName("user1")

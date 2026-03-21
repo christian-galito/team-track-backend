@@ -156,6 +156,28 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.RegisterUs
             _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public async Task RegisterUser_ShouldFail_WhenRoleIdIsInvalid(int roleId)
+        {
+            var command = new RegisterUserCommand(
+                FirstName: "John",
+                MiddleName: null,
+                LastName: "Doe",
+                UserName: "jdoe",
+                Email: "john@test.com",
+                Password: "Passw0rd!",
+                RoleId: roleId
+            );
+
+            Func<Task> act = () => _mediator.Send(command);
+
+            await act.Should().ThrowAsync<ValidationException>();
+            _userRepositoryMock.Verify(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
+            _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
         private static RegisterUserCommand ValidCommand() => new RegisterUserCommand(
             FirstName: "John",
             MiddleName: null,
