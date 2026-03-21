@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using TeamTrack.Application.Authorization;
 using TeamTrack.Application.Common.Behaviors;
 
 namespace TeamTrack.Application
@@ -14,6 +16,10 @@ namespace TeamTrack.Application
             services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
             services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
+
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
             return services;
         }

@@ -24,6 +24,14 @@ namespace TeamTrack.Infrastructure.Services.CurrentUser
                 .User?
                 .FindFirst("username")?
                 .Value ?? "System User";
+
+        public IEnumerable<string> Permissions =>
+      
+            _httpContextAccessor.HttpContext?
+                .User
+                ?.FindAll("Permission")
+                .Select(c => c.Value) ?? Enumerable.Empty<string>();
+      
     }
 
 }

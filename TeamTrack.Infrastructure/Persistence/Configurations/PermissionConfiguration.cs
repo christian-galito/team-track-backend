@@ -4,25 +4,28 @@ using TeamTrack.Domain.Entities;
 
 namespace TeamTrack.Infrastructure.Persistence.Configurations
 {
-    internal class RoleConfiguration : IEntityTypeConfiguration<Role>
+    public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
     {
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<Permission> builder)
         {
             builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.Id)
+                .ValueGeneratedNever();
+
             builder.Property(x => x.Name)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(128);
 
             builder.Property(x => x.Description)
-                .HasMaxLength(500);
+                .HasMaxLength(512);
 
             builder.HasIndex(x => x.Name)
                 .IsUnique();
 
-            builder.HasMany(x => x.Permissions)
-                .WithOne(p => p.Role)
-                .HasForeignKey(p => p.RoleId)
+            builder.HasMany(x => x.RolePermissions)
+                .WithOne(r => r.Permission)
+                .HasForeignKey(x => x.PermissionId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

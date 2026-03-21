@@ -39,7 +39,7 @@ namespace TeamTrack.Application.Features.Authentication.Commands.LoginUser
                     throw new UnauthorizedAccessException("Invalid credentials.");
                 }
 
-                var accessToken = _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email);
+                var accessToken = await _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email, cancellationToken);
                 var refreshToken = _tokenService.GenerateRefreshToken();
                 var hashedRefreshToken = _refreshTokenHasher.HashRefreshToken(refreshToken);
 

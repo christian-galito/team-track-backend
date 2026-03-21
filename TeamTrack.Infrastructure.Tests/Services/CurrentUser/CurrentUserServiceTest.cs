@@ -8,10 +8,19 @@ namespace TeamTrack.Infrastructure.Tests.Services.CurrentUser
 
         public string? UserId { get; }
 
-        public CurrentUserServiceTest(string? userId = "1", string? userName = "test-user")
+        public IEnumerable<string> Permissions { get; }
+
+        public CurrentUserServiceTest(string? userId = "1", string? userName = "test-user", IEnumerable<string>? permissions = null)
         {
             UserName = userName;
             UserId = userId;
+            Permissions = permissions ?? new[]
+            {
+                "CreateUser",
+                "ReadUser",
+                "UpdateUser",
+                "DeleteUser"
+            };
         }
     }
 }

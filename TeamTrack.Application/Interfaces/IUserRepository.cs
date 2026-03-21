@@ -12,6 +12,8 @@ namespace TeamTrack.Application.Interfaces
 
         Task<User?> GetByIdAsync(int userId, CancellationToken cancellationToken);
 
+        Task<IEnumerable<string>> GetUserPermissionsAsync(int userId, CancellationToken cancellationToken = default);
+
         void Update(User user);
 
         Task<bool> UserNameExistsAsync(string userName, CancellationToken cancellationToken);

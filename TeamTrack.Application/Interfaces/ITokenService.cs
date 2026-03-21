@@ -2,7 +2,7 @@
 {
     public interface ITokenService
     {
-        string GenerateAccessToken(int userId, string username, string email);
+        Task<string> GenerateAccessToken(int userId, string username, string email, CancellationToken cancellationToken);
 
         string GenerateRefreshToken();
     }

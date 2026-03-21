@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TeamTrack.Application\TeamTrack.Application.csproj" />
     <ProjectReference Include="..\TeamTrack.Domain\TeamTrack.Domain.csproj" />
+    <ProjectReference Include="..\TeamTrack.Infrastructure\TeamTrack.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

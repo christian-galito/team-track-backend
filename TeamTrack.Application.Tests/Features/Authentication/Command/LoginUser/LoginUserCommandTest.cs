@@ -93,8 +93,8 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
                 .Returns(true);
 
             _tokenServiceMock
-                .Setup(x => x.GenerateAccessToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns("valid-access-token");
+                .Setup(x => x.GenerateAccessToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("valid-access-token");
 
             _tokenServiceMock
                 .Setup(x => x.GenerateRefreshToken())

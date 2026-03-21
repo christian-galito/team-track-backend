@@ -51,7 +51,7 @@ namespace TeamTrack.Application.Features.Authentication.Commands.TokenRefresh
                     throw new NotFoundException(nameof(User), existingToken.UserId);
                 }
 
-                var accessToken = _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email);
+                var accessToken = await _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email, cancellationToken);
                 var refreshToken = _tokenService.GenerateRefreshToken();
                 var hashedNewRefreshToken = _refreshTokenHasher.HashRefreshToken(refreshToken);
 

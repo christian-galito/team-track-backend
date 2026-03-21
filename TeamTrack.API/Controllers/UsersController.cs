@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Users.Commands.DeleteUser;
 using TeamTrack.Application.Features.Users.Commands.UpdateUser;
 using TeamTrack.Application.Features.Users.Queries;
+using TeamTrack.Domain.Security;
 
 namespace TeamTrack.API.Controllers
 {
@@ -18,7 +19,7 @@ namespace TeamTrack.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.User.ReadPolicy)]
         [HttpGet("{userId:int}")]
         public async Task<IActionResult> GetUserById(int userId, CancellationToken cancellationToken)
         {
@@ -27,7 +28,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.User.UpdatePolicy)]
         [HttpPut("{userId:int}")]
         public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserCommand command, CancellationToken cancellationToken)
         {
@@ -37,7 +38,7 @@ namespace TeamTrack.API.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policy = Permissions.User.DeletePolicy)]
         [HttpDelete("{userId:int}")]
         public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
         {
