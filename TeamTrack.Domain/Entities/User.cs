@@ -133,14 +133,14 @@ namespace TeamTrack.Domain.Entities
             _credentials.Add(UserCredential.Create(this, hashedPassword));
         }
 
-        public void AddRefreshToken(string refreshToken)
+        public void AddRefreshToken(string refreshToken, string? ipAddress = null, string? userAgent = null)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 throw new DomainException("Refresh token cannot be empty.");
             }
 
-            _refreshTokens.Add(RefreshToken.Create(this, refreshToken));
+            _refreshTokens.Add(RefreshToken.Create(this, refreshToken, ipAddress, userAgent));
         }
     }
 }

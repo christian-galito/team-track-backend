@@ -11,7 +11,7 @@ namespace TeamTrack.Infrastructure.Tests.Builders
         private string? _middleName;
         private int? _roleId;
         private string _hashedPassword = "hashed-password";
-        private string? _hashedRefreshToken;
+        private List<string> _hashedRefreshToken = new();
 
         public UserBuilder WithName(string firstName, string? middleName, string lastName)
         {
@@ -47,7 +47,7 @@ namespace TeamTrack.Infrastructure.Tests.Builders
 
         public UserBuilder WithRefreshToken(string hashedRefreshToken)
         {
-            _hashedRefreshToken = hashedRefreshToken;
+            _hashedRefreshToken.Add(hashedRefreshToken);
             return this;
         }
 
@@ -67,9 +67,15 @@ namespace TeamTrack.Infrastructure.Tests.Builders
                 user.AssignRole(_roleId.Value);
             }
 
-            if (!String.IsNullOrWhiteSpace(_hashedRefreshToken))
+            if (_hashedRefreshToken.Count > 0)
             {
-                user.AddRefreshToken(_hashedRefreshToken);
+                foreach(var token in _hashedRefreshToken)
+                {
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        user.AddRefreshToken(token);
+                    }
+                }
             }
 
             return user;

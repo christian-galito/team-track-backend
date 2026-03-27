@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using TeamTrack.Application.Common.Behaviors;
@@ -17,7 +18,8 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
         private readonly Mock<ITokenService> _tokenServiceMock = new();
-        private readonly Mock<IRefreshTokenHasher> _refreshTokenHasherMock = new();
+        private readonly Mock<IRefreshTokenService> _refreshTokenServiceMock = new();
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
 
         public LoginUserCommandTest()
         {
@@ -32,7 +34,8 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
             services.AddTransient<IPasswordHasher>(_ => _passwordHasherMock.Object);
             services.AddTransient<IUnitOfWork>(_ => _unitOfWorkMock.Object);
             services.AddTransient<ITokenService>(_ => _tokenServiceMock.Object);
-            services.AddTransient<IRefreshTokenHasher>(_ => _refreshTokenHasherMock.Object);
+            services.AddTransient<IRefreshTokenService>(_ => _refreshTokenServiceMock.Object);
+            services.AddTransient<IHttpContextAccessor>(_ => _httpContextAccessorMock.Object);
 
             services.AddValidatorsFromAssemblyContaining<LoginUserCommand>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -82,11 +85,12 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
         }
 
         [Fact]
-        public async Task LoginUser_ShouldReturnUser_WhenCredentialsAreValid()
+        public async Task LoginUser_ShouldReturnTokens_WhenCredentialsAreValid()
         {
+            var user = CreateUserWithCredential();
             _userRepositoryMock
                 .Setup(x => x.GetByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(CreateUserWithCredential());
+                .ReturnsAsync(user);
 
             _passwordHasherMock
                 .Setup(x => x.VerifyPassword(It.IsAny<string>(), It.IsAny<string>()))
@@ -96,17 +100,14 @@ namespace TeamTrack.Application.Tests.Features.Authentication.Command.LoginUser
                 .Setup(x => x.GenerateAccessToken(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync("valid-access-token");
 
-            _tokenServiceMock
-                .Setup(x => x.GenerateRefreshToken())
+            _refreshTokenServiceMock
+                .Setup(x => x.CreateRefreshToken(It.IsAny<User>(), It.IsAny<string?>(), It.IsAny<string>()))
                 .Returns("valid-refresh-token");
-
-            _refreshTokenHasherMock
-                .Setup(x => x.HashRefreshToken(It.IsAny<string>()))
-                .Returns("hashed-valid-refresh-token");
 
             var command = new LoginUserCommand("test@test.com", "validpassword");
             var result = await _mediator.Send(command);
 
+            _refreshTokenServiceMock.Verify(x => x.CreateRefreshToken(user, It.IsAny<string?>(), It.IsAny<string?>()), Times.Once);
             result.AccessToken.Should().Be("valid-access-token");
             result.RefreshToken.Should().Be("valid-refresh-token");
         }

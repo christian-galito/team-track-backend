@@ -10,36 +10,34 @@ namespace TeamTrack.Application.Features.Authentication.Commands.TokenRefresh
     {
         public class TokenRefreshCommandHandler : IRequestHandler<TokenRefreshCommand, TokenResponse>
         {
-            private readonly IRefreshTokenRepository _refreshTokenRepository;
-
             private readonly IUserRepository _userRepository;
 
             private readonly ITokenService _tokenService;
 
-            private readonly IRefreshTokenHasher _refreshTokenHasher;
+            private readonly IRefreshTokenService _refreshTokenService;           
+            
 
             private readonly IUnitOfWork _unitOfWork;
 
-            public TokenRefreshCommandHandler(IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository, ITokenService tokenService, IRefreshTokenHasher refreshTokenHasher, IUnitOfWork unitOfWork)
+            public TokenRefreshCommandHandler
+            (
+                IUserRepository userRepository,
+                ITokenService tokenService,
+                IRefreshTokenService refreshTokenService,
+                IUnitOfWork unitOfWork
+            )
             {
-                _refreshTokenRepository = refreshTokenRepository;
                 _userRepository = userRepository;
                 _tokenService = tokenService;
-                _refreshTokenHasher = refreshTokenHasher;
+                _refreshTokenService = refreshTokenService;
                 _unitOfWork = unitOfWork;
              }
 
             public async Task<TokenResponse> Handle(TokenRefreshCommand request, CancellationToken cancellationToken)
             {
-                var hashedToken = _refreshTokenHasher.HashRefreshToken(request.Token);
-                var existingToken = await _refreshTokenRepository.GetByTokenAsync(hashedToken, cancellationToken);
+                var existingToken = await _refreshTokenService.GetValidTokenAsync(request.Token, cancellationToken);
 
                 if (existingToken == null)
-                {
-                    throw new NotFoundException(nameof(RefreshToken));
-                }
-
-                if (!existingToken.IsActive())
                 {
                     throw new UnauthorizedAccessException("Invalid refresh token.");
                 }
@@ -52,11 +50,7 @@ namespace TeamTrack.Application.Features.Authentication.Commands.TokenRefresh
                 }
 
                 var accessToken = await _tokenService.GenerateAccessToken(user.Id, user.UserName, user.Email, cancellationToken);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-                var hashedNewRefreshToken = _refreshTokenHasher.HashRefreshToken(refreshToken);
-
-                user.AddRefreshToken(hashedNewRefreshToken);
-                existingToken.Revoke(hashedNewRefreshToken);
+                var refreshToken = _refreshTokenService.RotateRefreshToken(existingToken, user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 

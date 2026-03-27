@@ -13,6 +13,26 @@ namespace TeamTrack.Infrastructure.Services.CurrentUser
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public string? IpAddress
+        {
+            get
+            {
+                var ip = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
+
+                if (ip == null) return null;
+
+                if (ip.IsIPv4MappedToIPv6)
+                {
+                    return ip.MapToIPv4().ToString();
+                }
+
+                return ip.ToString();
+            }
+        }
+
+        public string? UserAgent =>
+            _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
+
         public string? UserId =>
             _httpContextAccessor.HttpContext?
                 .User?
@@ -31,7 +51,5 @@ namespace TeamTrack.Infrastructure.Services.CurrentUser
                 .User
                 ?.FindAll("Permission")
                 .Select(c => c.Value) ?? Enumerable.Empty<string>();
-      
     }
-
 }

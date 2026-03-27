@@ -14,6 +14,13 @@ namespace TeamTrack.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<RefreshToken>> GetActiveTokensByUserIdAsync(int userId, CancellationToken cancellationToken)
+        {
+            return await _context.RefreshTokens
+                .Where(r => r.UserId == userId && !r.IsRevoked && r.ExpiresAt >= DateTime.UtcNow)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<RefreshToken?> GetByTokenAsync(string refreshToken, CancellationToken cancellationToken)
         {
             return await _context.RefreshTokens

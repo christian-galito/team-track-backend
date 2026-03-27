@@ -47,6 +47,7 @@ namespace TeamTrack.Infrastructure.Repositories
             return await _context.Users
                 .Include(u => u.Roles)
                 .Include(u => u.Credentials)
+                .Include(u => u.RefreshTokens)
                 .FirstOrDefaultAsync(u => u.Email == email, cancellation);
         }
 
@@ -55,6 +56,7 @@ namespace TeamTrack.Infrastructure.Repositories
             return await _context.Users
                 .Include(u => u.Roles)
                 .Include(u => u.Credentials)
+                .Include(u => u.RefreshTokens)
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
         }
 
