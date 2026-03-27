@@ -4,7 +4,7 @@ using TeamTrack.Domain.Entities;
 
 namespace TeamTrack.Domain.Tests.Entities
 {
-    public class ProjectTests
+    public class ProjectTest
     {
         [Fact]
         public void Constructor_ShouldThrow_WhenNameIsEmpty()

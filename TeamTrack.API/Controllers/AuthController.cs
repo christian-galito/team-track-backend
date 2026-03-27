@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TeamTrack.Application.Features.Authentication.Commands.LoginUser;
+using TeamTrack.Application.Features.Authentication.Commands.LogoutUser;
 using TeamTrack.Application.Features.Authentication.Commands.RegisterUser;
 using TeamTrack.Application.Features.Authentication.Commands.TokenRefresh;
 using TeamTrack.Domain.Security;
@@ -39,6 +40,14 @@ namespace TeamTrack.API.Controllers
             var result = await _mediator.Send(command, cancellationToken);
 
             return Ok(result);
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(LogoutUserCommand command, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(command, cancellationToken);
+
+            return NoContent();
         }
 
         [AllowAnonymous]

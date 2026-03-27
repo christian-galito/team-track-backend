@@ -20,7 +20,7 @@ namespace TeamTrack.Infrastructure.Tests.Persistence
                 .UseSqlite(_connection)
                 .Options;
 
-            var _currentUser = new CurrentUserServiceTest();
+            var _currentUser = new FakeCurrentUserService();
 
             Context = new TeamTrackDbContext(options, _currentUser);
             Context.Database.EnsureCreated();
@@ -32,7 +32,7 @@ namespace TeamTrack.Infrastructure.Tests.Persistence
                 .UseSqlite(_connection)
                 .Options;
 
-            var freshContext = new TeamTrackDbContext(options, new CurrentUserServiceTest());
+            var freshContext = new TeamTrackDbContext(options, new FakeCurrentUserService());
             freshContext.Database.EnsureCreated();
 
             return freshContext;

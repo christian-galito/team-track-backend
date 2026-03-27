@@ -24,6 +24,21 @@ namespace TeamTrack.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.ExpiresAt)
                 .IsRequired();
+
+            builder.Property(x => x.RevokedBy)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            builder.Property(x => x.ReplacedByToken)
+                .HasMaxLength(44)
+                .IsUnicode(false);
+
+            builder.Property(x => x.IpAddress)
+                .HasMaxLength(45) 
+                .IsUnicode(false);
+
+            builder.Property(x => x.UserAgent)
+                .HasMaxLength(1024); 
         }
     }
 }
